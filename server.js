@@ -7,6 +7,7 @@ dotenv.config();
 
 app.use(express.json());
 
+
 app.get("/",(req,res)=>{
     res.send("Server is ready");
 })
@@ -17,3 +18,5 @@ const PORT = process.env.PORT || 5000;
     connectDB();
     console.log(`Server is running in ${PORT}`);
  })
+
+ 
