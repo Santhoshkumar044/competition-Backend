@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import passport from 'passport';
 
 export const googleAuth = passport.authenticate('google', { 
