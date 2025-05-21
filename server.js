@@ -8,6 +8,7 @@ import passport from 'passport';
 import configurePassport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 
 
 const app = express();
@@ -33,7 +34,7 @@ app.use(passport.session());
 // Routes
 app.use('/', authRoutes);
 app.use('/', userRoutes);
-
+app.use('/api/students',studentRoutes);
 
 app.use(express.json());
 
