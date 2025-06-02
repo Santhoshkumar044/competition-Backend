@@ -7,6 +7,8 @@ import cors from 'cors';
 import passport from 'passport';
 import configurePassport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
+import scraperRoutes from './routes/scrapingRoutes.js';
+import { startScrapingScheduler } from './services/scrapingScheduler.js';
 
 const app = express();
 dotenv.config();
@@ -35,6 +37,7 @@ app.use(express.json());
 
 // Routes
 app.use('/', authRoutes);
+app.use('/api', scraperRoutes);
 
 // Health check
 app.get("/", (req, res) => {
@@ -43,7 +46,11 @@ app.get("/", (req, res) => {
 
 // Connect to DB and start server
 const PORT = process.env.PORT || 5000;
-connectDB();
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+connectDB().then(() => {
+  // Start the scraping scheduler after DB connection is established
+  startScrapingScheduler();
+  
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
