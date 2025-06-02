@@ -7,47 +7,43 @@ import cors from 'cors';
 import passport from 'passport';
 import configurePassport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import studentRoutes from './routes/studentRoutes.js';
-
 
 const app = express();
+dotenv.config();
 
 // Passport configuration
 configurePassport();
-dotenv.config();
 
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true
 }));
-app.use(express.json());
+
+// Required for maintaining session across Google login
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
-app.use('/', authRoutes);
-app.use('/', userRoutes);
-app.use('/api/students',studentRoutes);
-
+// JSON parser
 app.use(express.json());
 
+// Routes
+app.use('/', authRoutes);
 
-app.get("/",(req,res)=>{
-    res.send("Server is ready");
-})
+// Health check
+app.get("/", (req, res) => {
+  res.send("Server is ready with Google login");
+});
 
-const PORT = process.env.PORT || 5000; 
- console.log(process.env.MONGO_URI);
- app.listen(PORT,() =>{
-    connectDB();
-    console.log(`Server is running in ${PORT}`);
- })
-
- 
+// Connect to DB and start server
+const PORT = process.env.PORT || 5000;
+connectDB();
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
