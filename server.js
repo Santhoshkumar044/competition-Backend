@@ -9,6 +9,8 @@ import configurePassport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
 import scraperRoutes from './routes/scrapingRoutes.js';
 import { startScrapingScheduler } from './services/scrapingScheduler.js';
+import hostRoutes from './routes/hostRoutes.js';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 dotenv.config();
@@ -27,6 +29,17 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({            // Add this block
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 14 * 24 * 60 * 60,            // Session TTL (14 days)
+    autoRemove: 'native'               // Cleanup expired sessions
+  }),
+  cookie: { 
+    secure: false,                     // Set to `true` 
+    httpOnly: true,                   //change it after testing
+    sameSite: 'lax',
+    maxAge: 14 * 24 * 60 * 60 * 1000  // Matches TTL
+  }
 }));
 
 app.use(passport.initialize());
@@ -38,7 +51,15 @@ app.use(express.json());
 // Routes
 app.use('/', authRoutes);
 app.use('/api', scraperRoutes);
+app.use('/api/host',hostRoutes);
 
+app.get('/api/me', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ user: req.user });
+  } else {
+    res.status(401).json({ message: 'Not logged in' });
+  }
+});
 // Health check
 app.get("/", (req, res) => {
   res.send("Server is ready with Google login");
