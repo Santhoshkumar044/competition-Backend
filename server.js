@@ -13,6 +13,7 @@ import hostRoutes from './routes/hostRoutes.js';
 import MongoStore from 'connect-mongo';
 import competitionRoutes from './routes/manualcompetitionRoutes.js' 
 import profileRoute from './routes/profileRoutes.js';
+import confirmRegister from './routes/confirmationRoutes.js';
 
 const app = express();
 dotenv.config();
@@ -56,6 +57,7 @@ app.use('/api', scraperRoutes);  //scraping route
 app.use('/api/host',hostRoutes);  //adding host route
 app.use('/api/competitions',competitionRoutes);  //posting competitions by host
 app.use('/profile',profileRoute);  //user profile creation and updation
+app.use('/competition',confirmRegister);
 
 app.get('/api/me', (req, res) => {
   if (req.isAuthenticated()) {
