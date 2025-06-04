@@ -4,9 +4,9 @@ import Profile from '../models/Profileschema.js';
 // POST /profile/create
 export const createProfile = async (req, res) => {
   try {
-    const { fullName, rollNo, email, Dept, batch, Gender, domain, bio } = req.body;
+    const { fullName, RegNo, email, Dept, batch, Gender, domain, bio } = req.body;
 
-    const newProfile = new Profile({ fullName, rollNo, email, Dept, batch, Gender, domain, bio });
+    const newProfile = new Profile({ fullName, RegNo, email, Dept, batch, Gender, domain, bio });
     const savedProfile = await newProfile.save();
 
     res.status(201).json({
@@ -23,7 +23,7 @@ export const createProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const profileId = req.params.id;
-    const { fullName, rollNo, email, Dept, batch, Gender, domain, bio } = req.body;
+    const { fullName, RegNo, email, Dept, batch, Gender, domain, bio } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(profileId)) {
       return res.status(400).json({ error: 'Invalid profile ID' });
@@ -32,7 +32,7 @@ export const updateProfile = async (req, res) => {
     const updatedProfile = await Profile.findByIdAndUpdate(
       profileId,
       {
-        $set: { fullName, rollNo, email, Dept, batch, Gender, domain, bio },
+        $set: { fullName, RegNo, email, Dept, batch, Gender, domain, bio },
       },
       { new: true }
     );

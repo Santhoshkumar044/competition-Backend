@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const profileSchema = new mongoose.Schema({
   fullName:{type: String,required: true},
   Dept:{type: String,required: true},
-  RegNo:{type:String,unique:true},
+  RegNo:{type:String,required:true,unique:true},
   batch:{type: String,required:true},
   email:{type:String,required:true},
   Gender:{type:String,required:true},
