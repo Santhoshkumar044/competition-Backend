@@ -12,6 +12,7 @@ import { startScrapingScheduler } from './services/scrapingScheduler.js';
 import hostRoutes from './routes/hostRoutes.js';
 import MongoStore from 'connect-mongo';
 import competitionRoutes from './routes/manualcompetitionRoutes.js' 
+import profileRoute from './routes/profileRoutes.js';
 
 const app = express();
 dotenv.config();
@@ -53,7 +54,8 @@ app.use(express.json());
 app.use('/', authRoutes); // sign in route
 app.use('/api', scraperRoutes);  //scraping route
 app.use('/api/host',hostRoutes);  //adding host route
-app.use('/api/competitions',competitionRoutes);
+app.use('/api/competitions',competitionRoutes);  //posting competitions by host
+app.use('/profile',profileRoute);  //user profile creation and updation
 
 app.get('/api/me', (req, res) => {
   if (req.isAuthenticated()) {

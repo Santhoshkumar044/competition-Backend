@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
   Dept:{type: String,required: true},
   RegNo:{type:String,unique:true},
   batch:{type: String,required:true},
+  email:{type:String,required:true},
   Gender:{type:String,required:true},
   domain:{type:String},
   bio:{type: String},
