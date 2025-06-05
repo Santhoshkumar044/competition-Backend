@@ -42,7 +42,12 @@ const competitionSchema = new mongoose.Schema({
             },
             message: props => `${props.value} is not a valid URL!`
         }
-    }
+    },
+    source: {
+        type: String,
+        enum: ['manual', 'scraped'],
+        default: 'scraped' //Default to 'manual' if not specified
+    },
 }, {
     timestamps: true 
 });
