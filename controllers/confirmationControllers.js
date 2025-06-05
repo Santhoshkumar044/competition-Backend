@@ -25,6 +25,7 @@ export const confirmRegistration = async (req, res) => {
       RegNo: user.RegNo,
       department: user.Dept,
       batch: user.batch,
+      email:user.email,
       competitionTitle: competition.title,
       competitionId: competition._id,
       profileId: user._id, // Ensure we store the user reference
