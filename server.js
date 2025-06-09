@@ -56,8 +56,8 @@ app.use('/', authRoutes); // sign in route
 app.use('/api', scraperRoutes);  //scraping route
 app.use('/api/host',hostRoutes);  //adding host route
 app.use('/api/competitions',competitionRoutes);  //posting competitions by host
-app.use('/profile',profileRoute);  //user profile creation and updation
-app.use('/competition',confirmRegister);
+app.use('/api/profile',profileRoute);  //user profile creation and updation
+app.use('/api/competition',confirmRegister);  
 
 app.get('/api/me', (req, res) => {
   if (req.isAuthenticated()) {

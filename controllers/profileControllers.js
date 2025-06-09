@@ -50,3 +50,24 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ error: 'Server error while updating profile' });
   }
 };
+
+export const getMyProfile = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const profile = await Profile.findOne({ user: userId });
+
+    if (!profile) {
+      return res.status(404).json({ message: 'Profile not found' });
+    }
+
+    res.status(200).json({ profile });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: 'Server error while fetching profile' });
+  }
+};
