@@ -7,8 +7,8 @@ const profileSchema = new mongoose.Schema({
   batch: { type: String, required: true },
   email: { type: String, required: true },
   Gender: { type: String, required: true },
-  domain: { type: String },
-  bio: { type: String },
+  domain: { type: String, required:true },
+  bio: { type: String, required: true },
   competitionStats: {
     attended: { type: Number, default: 0 },
     won: { type: Number, default: 0 }
