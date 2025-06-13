@@ -22,7 +22,7 @@ import initModels from './models/index.js';
 import { CompetitionService } from './services/competitionService.js';
 import { ScrapingScheduler } from './services/scrapingScheduler.js';
 import { ScraperController } from './controllers/scraperController.js';
-import statsRoutes from './routes/statsRoutes';
+import statsRoutes from './routes/statsRoutes.js';
 
 const app = express();
 const server = http.createServer(app);

@@ -3,7 +3,12 @@ const templateschema =new mongoose.Schema({
     title:String,
     description:String,
     collegeName:String,
-    roomnumber:String,
+    venueDetails: {
+        venueId: String,
+        roomnumber: String,
+        capacity: Number,
+        location: String,
+    },
     EventDate:Date,
     StartTime:Date,
     endTime:Date
