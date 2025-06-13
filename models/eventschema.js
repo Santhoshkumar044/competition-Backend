@@ -1,19 +1,20 @@
 import mongoose from 'mongoose';
+
 const eventSchema = new mongoose.Schema({
-  title: {type: String,required: true},
-  description:{type: String},
-  collegeName:{type: String},
-  venue:{
-    roomNumber:String,
-    location: String,
+  title: String,
+  description: String,
+  collegeName: String,
+  venueDetails: {
+    venueId: String,
+    roomnumber: String,
     capacity: Number,
+    location: String,
   },
-  EventDate:{type:Date},
-  startTime:{type:String},
-  endTime:{type: String},
-  isRegistrationOpen:{type: Boolean,default: true},
+  startTime: Date,
+  endTime: Date,
+  EventDate: Date
+});
 
-}, { timestamps: true });
-
-const Event = mongoose.model('Event', eventSchema);
-export default Event;
+export default function createEventModel(db) {
+  return db.models.Event || db.model('Event', eventSchema);
+}

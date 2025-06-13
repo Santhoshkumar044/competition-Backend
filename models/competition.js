@@ -46,15 +46,15 @@ const competitionSchema = new mongoose.Schema({
     source: {
         type: String,
         enum: ['manual', 'scraped'],
-        default: 'scraped' //Default to 'manual' if not specified
+        default: 'scraped'
     },
 }, {
-    timestamps: true 
+    timestamps: true,
+    collection:'competitions'
 });
-
 
 competitionSchema.index({ title: 'text', organiser: 'text', mode: 1 });
 
-const Competition = mongoose.model('Competition', competitionSchema);
-
-export default Competition;
+export default function createCompetitionModel(dbConnection) {
+    return dbConnection.model('Competition', competitionSchema);
+}

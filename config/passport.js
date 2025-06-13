@@ -1,34 +1,41 @@
-import 'dotenv/config';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../models/users.js';
-import Host from '../models/hostschema.js'; 
 
-const configurePassport = () => {
+export default function configurePassport(app) {
+  
+   if (!app.locals?.models) {
+    throw new Error('Models not initialized! Configure database first.');
+  }
+
+  const { User, Host } = app.locals.models;
+
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.CALLBACK_URL,
-  },
-  async (accessToken, refreshToken, profile, done) => {
+    passReqToCallback: true
+  }, async (req, accessToken, refreshToken, profile, done) => {
     try {
       const email = profile.emails[0].value;
-
-      //Check if email is listed as a host
       const hostEntry = await Host.findOne({ email });
-
-      let user = await User.findOne({ googleId: profile.id });
+      
+      let user = await User.findOne({ 
+        $or: [
+          { googleId: profile.id },
+          { email }
+        ]
+      });
 
       if (!user) {
-        user = new User({
+        user = await User.create({
           googleId: profile.id,
           name: profile.displayName,
-          email: email,
-          role: hostEntry ? 'host' : 'student' //Assign role based on host DB
+          email,
+          role: hostEntry ? 'host' : 'student'
         });
-        await user.save();
       } else {
-        //If user already exists and host status changed
+        // Update existing user if needed
+        if (!user.googleId) user.googleId = profile.id;
         const newRole = hostEntry ? 'host' : 'student';
         if (user.role !== newRole) {
           user.role = newRole;
@@ -36,13 +43,15 @@ const configurePassport = () => {
         }
       }
 
-      done(null, user);
+      return done(null, user);
     } catch (err) {
-      done(err, null);
+      return done(err, null);
     }
   }));
 
-  passport.serializeUser((user, done) => done(null, user._id));
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
 
   passport.deserializeUser(async (id, done) => {
     try {
@@ -52,6 +61,4 @@ const configurePassport = () => {
       done(err, null);
     }
   });
-};
-
-export default configurePassport;
+}

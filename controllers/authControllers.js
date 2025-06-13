@@ -8,7 +8,7 @@ export const googleAuth = passport.authenticate('google', {
 export const googleAuthCallback = (req, res, next) => {
   passport.authenticate('google', async (err, user, info) => {
     if (err || !user) {
-      return res.redirect(`${process.env.FRONTEND_URL}/login`);
+      return res.redirect(`${process.env.FRONTEND_URL}login`);
     }
 
     req.login(user, (err) => {
