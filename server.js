@@ -15,12 +15,14 @@ import competitionRoutes from './routes/manualCompetitionRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import profileRoute from './routes/profileRoutes.js';
 import venueRoutes from './routes/venueRoutes.js';
+import templateRoutes from './routes/templateRoutes.js';
 import confirmRegister from './routes/confirmationRoutes.js';
 import { setupSocket } from './sockets.io/socketHandler.js';
 import initModels from './models/index.js';
 import { CompetitionService } from './services/competitionService.js';
 import { ScrapingScheduler } from './services/scrapingScheduler.js';
 import { ScraperController } from './controllers/scraperController.js';
+import statsRoutes from './routes/statsRoutes';
 
 const app = express();
 const server = http.createServer(app);
@@ -125,7 +127,8 @@ async function startServer() {
   app.use('/api/profile', profileRoute);
   app.use('/api/competition', confirmRegister);
   app.use('/api/venue', venueRoutes);
-
+  app.use('/api/templates', templateRoutes);
+  app.use('api/stats',statsRoutes);
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
     scraperController.scrapeAllSourcesHandler(req, res)
