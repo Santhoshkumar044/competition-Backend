@@ -23,7 +23,7 @@ import { CompetitionService } from './services/competitionService.js';
 import { ScrapingScheduler } from './services/scrapingScheduler.js';
 import { ScraperController } from './controllers/scraperController.js';
 import statsRoutes from './routes/statsRoutes.js';
-
+import eventParticipation from './routes/eventConfirmationRoutes.js';
 const app = express();
 const server = http.createServer(app);
 
@@ -124,6 +124,7 @@ async function startServer() {
   app.use('/api/host', hostRoutes);
   app.use('/api/competitions', competitionRoutes);
   app.use('/api', eventRoutes);
+  app.use('/api/events',eventParticipation);
   app.use('/api/profile', profileRoute);
   app.use('/api/competition', confirmRegister);
   app.use('/api/venue', venueRoutes);

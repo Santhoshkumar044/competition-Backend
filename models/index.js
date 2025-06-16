@@ -5,6 +5,7 @@ import createCompetitionModel from './competition.js';
 import createEventModel from './eventSchema.js';
 import createVenueModel from './venueschema.js';
 import createCompetitionParticipantModel from './competitionConfirmation.js';
+import createEventConfirmationModel from './eventConfirmationschema.js';
 import mongoose from 'mongoose';
 /**
  * Initialize all models with the correct database connections
@@ -24,6 +25,7 @@ export default function initModels() {
     Competition: createCompetitionModel(myProjectDb),
     Event: createEventModel(myProjectDb),
     CompetitionParticipant: createCompetitionParticipantModel(myProjectDb),
+     EventParticipant: createEventConfirmationModel(myProjectDb),
     Venue: createVenueModel(venueDb),
     // Reference to the DB connections if needed
     _dbs: {
