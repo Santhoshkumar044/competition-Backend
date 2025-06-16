@@ -24,6 +24,8 @@ import { ScrapingScheduler } from './services/scrapingScheduler.js';
 import { ScraperController } from './controllers/scraperController.js';
 import statsRoutes from './routes/statsRoutes.js';
 import eventParticipation from './routes/eventConfirmationRoutes.js';
+import './Jobs/scheduleSheetSync.js';
+import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 const server = http.createServer(app);
 
@@ -130,6 +132,7 @@ async function startServer() {
   app.use('/api/venue', venueRoutes);
   app.use('/api/templates', templateRoutes);
   app.use('/api/stats',statsRoutes);
+  app.use('/api/admin',adminRoutes);
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
     scraperController.scrapeAllSourcesHandler(req, res)
