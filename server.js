@@ -128,7 +128,7 @@ async function startServer() {
   app.use('/api/competition', confirmRegister);
   app.use('/api/venue', venueRoutes);
   app.use('/api/templates', templateRoutes);
-  app.use('api/stats',statsRoutes);
+  app.use('/api/stats',statsRoutes);
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
     scraperController.scrapeAllSourcesHandler(req, res)

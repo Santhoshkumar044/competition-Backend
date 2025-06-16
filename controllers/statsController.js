@@ -21,13 +21,14 @@ export const getParticipantStats = async (req, res) => {
 
     // Generate stats
     const stats = {
-      Dept: {},
+      department: {},
       batch: {}
     };
 
     for (const p of participants) {
-      const { Dept, batch} = p;
-      stats.Dept[Dept] = (stats.Dept[Dept] || 0) + 1;
+      const department = p.department || 'Unknown';
+      const batch = p.batch || 'Unknown';
+      stats.department[department] = (stats.department[department] || 0) + 1;
       stats.batch[batch] = (stats.batch[batch] || 0) + 1;
       
     }
