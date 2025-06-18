@@ -11,7 +11,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import configurePassport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
 import hostRoutes from './routes/hostRoutes.js';
-import competitionRoutes from './routes/manualCompetitionRoutes.js';
+import competitionRoutes from './routes/manualcompetitionRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import profileRoute from './routes/profileRoutes.js';
 import venueRoutes from './routes/venueRoutes.js';
@@ -26,6 +26,8 @@ import statsRoutes from './routes/statsRoutes.js';
 import eventParticipation from './routes/eventConfirmationRoutes.js';
 import './Jobs/scheduleSheetSync.js';
 import adminRoutes from './routes/adminRoutes.js';
+import recommendationRoute from './routes/recommendationRoutes.js';
+
 const app = express();
 const server = http.createServer(app);
 
@@ -133,6 +135,7 @@ async function startServer() {
   app.use('/api/templates', templateRoutes);
   app.use('/api/stats',statsRoutes);
   app.use('/api/admin',adminRoutes);
+  app.use('/api',recommendationRoute);
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
     scraperController.scrapeAllSourcesHandler(req, res)
