@@ -11,16 +11,16 @@ export const recommendCompetitions = async (req, res) => {
         const inputDomain = userProfile.domain.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, ' ');
 
         const domainKeywordsMap = {
-            ai: ['ai', 'artificial intelligence', 'ml', 'machine learning'],
-            web: ['web', 'html', 'css', 'javascript', 'react'],
-            app: ['app', 'android', 'ios', 'mobile'],
-            cybersecurity: ['cyber', 'security', 'hacking', 'ctf'],
-            data: ['data', 'data science', 'analytics'],
-            cloud: ['cloud', 'aws', 'azure', 'gcp'],
-            robotics: ['robot', 'robotics', 'automation'],
-            iot: ['iot', 'internet of things'],
-            blockchain: ['blockchain', 'crypto', 'ethereum'],
-            aiml: ['ai', 'ml', 'machine learning', 'artificial intelligence'], 
+            ai: ['ai', 'artificial intelligence', 'ml', 'machine learning', 'deep learning', 'neural networks', 'natural language processing', 'computer vision'],
+            web: ['web', 'html', 'css', 'javascript', 'react', 'frontend','backend', 'fullstack', 'web development', 'web design', 'web app', 'web application', 'web dev', 'webapp development'],
+            app: ['app', 'android', 'ios', 'mobile', 'mobile app', 'mobile application', 'mobile development', 'mobile dev'],
+            cybersecurity: ['cyber', 'security', 'hacking', 'ctf', 'penetration testing', 'ethical hacking', 'cybersecurity', 'infosec', 'information security'],
+            data: ['data', 'data science', 'analytics', 'big data', 'data analysis', 'data engineering', 'data visualization', 'data mining'],
+            cloud: ['cloud', 'aws', 'azure', 'gcp', 'cloud computing', 'cloud services', 'cloud architecture', 'cloud development', 'cloud engineering', 'cloud infrastructure'],
+            robotics: ['robot', 'robotics', 'automation', 'drones', 'robotic systems', 'robotic engineering', 'robotic development', 'robotic technology',  'robotic applications'],
+            iot: ['iot', 'internet of things', 'embedded systems', 'smart devices', 'connected devices', 'iot development', 'iot applications', 'iot solutions', 'iot technology'],
+            blockchain: ['blockchain', 'crypto', 'ethereum', 'bitcoin', 'decentralized', 'smart contracts', 'dapps', 'distributed ledger', 'cryptocurrency'],
+            aiml: ['ai', 'ml', 'machine learning', 'artificial intelligence', 'deep learning', 'neural networks', 'natural language processing', 'computer vision'], 
         };
 
         let matchedCategory = null;
