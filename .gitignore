@@ -1,3 +1,4 @@
 node_modules/
 .env
-
+credentials-competition.json
+credentials-event.json
