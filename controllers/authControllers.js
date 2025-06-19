@@ -11,15 +11,29 @@ export const googleAuthCallback = (req, res, next) => {
       return res.redirect(`${process.env.FRONTEND_URL}login`);
     }
 
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) return next(err);
 
-      // Redirect based on role
-      const role = user.role; // assuming this is added in your `done()` method of Passport
+      const role = user.role;
+
       if (role === 'host') {
         return res.redirect(`${process.env.FRONTEND_URL}host-dashboard`);
-      } else {
-        return res.redirect(`${process.env.FRONTEND_URL}user`);
+      }
+
+      try {
+        const Profile = req.models.Profile;
+        const profile = await Profile.findOne({ email: user.email });
+
+        if (profile) {
+          
+          return res.redirect(`${process.env.FRONTEND_URL}user`);
+        } else {
+          
+          return res.redirect(`${process.env.FRONTEND_URL}profile`);
+        }
+      } catch (dbErr) {
+        console.error("Profile check failed:", dbErr);
+        return res.redirect(`${process.env.FRONTEND_URL}error`);
       }
     });
   })(req, res, next);
