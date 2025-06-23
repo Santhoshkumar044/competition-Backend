@@ -9,6 +9,7 @@ const profileSchema = new mongoose.Schema({
   Gender: { type: String, required: true },
   domain: { type: String, required:true },
   bio: { type: String, required: true },
+  coe:{type: String, required:true},
   competitionStats: {
     attended: { type: Number, default: 0 },
     won: { type: Number, default: 0 }
