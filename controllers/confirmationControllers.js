@@ -95,6 +95,7 @@ export const confirmRegistration = async (req, res) => {
       department: user.Dept,       
       batch: user.batch,           
       email: user.email,
+      coe:user.coe,
       competitionTitle: competition.title,
       competitionId: competition._id,
       profileId: user._id,
