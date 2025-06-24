@@ -51,7 +51,6 @@
 //     res.status(500).json({ error: 'Server error' });
 //   }
 // };
-
 export const confirmRegistration = async (req, res) => {
   try {
     const { competitionId, type, teamName } = req.body;
@@ -106,7 +105,7 @@ export const confirmRegistration = async (req, res) => {
     };
 
     if (type === 'team'){
-      participant.teamName = teamName;
+      participantData.teamName = teamName;
     }
     const participant = new CompetitionParticipant(participantData);
     await participant.save();
