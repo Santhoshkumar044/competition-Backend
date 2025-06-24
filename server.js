@@ -28,6 +28,7 @@ import './Jobs/scheduleSheetSync.js';
 import adminRoutes from './routes/adminRoutes.js';
 import recommendationRoute from './routes/recommendationRoutes.js';
 import hostCompetitionRoutes from './routes/hostCompetitionRoutes.js';
+import competitionConfirmationRoutes from './routes/competitionConfirmations.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -138,6 +139,8 @@ async function startServer() {
   app.use('/api/stats',statsRoutes);
   app.use('/api/admin',adminRoutes);
   app.use('/api',recommendationRoute);
+  app.use('/api/competition-confirmations',competitionConfirmationRoutes);
+
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
     scraperController.scrapeAllSourcesHandler(req, res)
