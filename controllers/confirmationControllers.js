@@ -54,10 +54,13 @@
 
 export const confirmRegistration = async (req, res) => {
   try {
-    const { competitionId } = req.body;
+    const { competitionId, type, teamName } = req.body;
 
     if (!req.user) {
       return res.status(401).json({ error: "Not authenticated" });
+    }
+    if (!competitionId || !type || (type === 'team' && !teamName)) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     // 1. Fetch the user's profile using the authenticated user's email
@@ -89,7 +92,7 @@ export const confirmRegistration = async (req, res) => {
     }
 
     // 4. Register the participant with your required fields
-    const participant = new CompetitionParticipant({
+    const participantData = {
       name: user.fullName,         
       RegNo: user.RegNo,           
       department: user.Dept,       
@@ -100,8 +103,12 @@ export const confirmRegistration = async (req, res) => {
       competitionId: competition._id,
       profileId: user._id,
       professorUpdated: true,      
-    });
+    };
 
+    if (type === 'team'){
+      participant.teamName = teamName;
+    }
+    const participant = new CompetitionParticipant(participantData);
     await participant.save();
 
     res.status(201).json({
