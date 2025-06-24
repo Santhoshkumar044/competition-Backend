@@ -14,30 +14,30 @@ export const createCompetition = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-
 export const getCompetitions = async (req, res) => {
   try {
     const Competition = req.models.Competition;
     const filter = {};
 
-    // Show only approved competitions to students
     if (!req.user || req.user.role === 'student') {
+      // 👨‍🎓 Students only see approved
       filter.status = 'approved';
+    } else if (req.user.role === 'host') {
+      // 👩‍💼 Hosts see only pending and approved
+      filter.status = { $in: ['pending', 'approved'] };
     }
-
-    // Filter by source (e.g., ?source=manual or scraped)
     if (req.query.source) {
       filter.source = req.query.source;
     }
 
     const competitions = await Competition.find(filter).sort({ createdAt: -1 });
-
     res.json(competitions);
   } catch (err) {
     console.error('❌ Error fetching competitions:', err);
     res.status(500).send('Server Error');
   }
 };
+
 
 export const getCompetitionById = async (req, res) => {
   try {
