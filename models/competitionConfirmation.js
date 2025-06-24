@@ -18,6 +18,7 @@ const competitionParticipantSchema = new mongoose.Schema({
     ref: 'Profile',
     required: true,
   },
+  teamName: { type: String},
   professorUpdated: { type: Boolean, default: true },
 }, { timestamps: true,
      collection:'competitionconfirmations'
