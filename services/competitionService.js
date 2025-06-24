@@ -10,27 +10,42 @@ export class CompetitionService {
     }
 
     const Competition = this.models.Competition;
+    let inserted = 0, updated = 0, skipped = 0;
 
-    const existingLinks = new Set(
-      (await Competition.find({}, 'link')).map(c => c.link)
-    );
+    for (const comp of newCompetitions) {
+      try {
+        const existing = await Competition.findOne({ link: comp.link });
 
-    const operations = newCompetitions.map(comp => ({
-      updateOne: {
-        filter: { link: comp.link },
-        update: { $set: comp },
-        upsert: true
+        if (existing) {
+          // Skip competitions already approved or rejected
+          if (['approved', 'rejected'].includes(existing.status)) {
+            skipped++;
+            continue;
+          }
+
+          // Optionally update if it's still pending
+          await Competition.updateOne(
+            { link: comp.link },
+            { $set: { ...comp } }
+          );
+          updated++;
+        } else {
+          // Insert new competition with status pending
+          await Competition.create({
+            ...comp,
+            source: 'scraped',
+            status: 'pending'
+          });
+          inserted++;
+        }
+      } catch (err) {
+        console.error(`❌ Error processing: ${comp.title} - ${err.message}`);
       }
-    }));
-
-    if (operations.length > 0) {
-      const result = await Competition.bulkWrite(operations);
-      console.log(`Database update results:
-        - Inserted: ${result.upsertedCount}
-        - Updated: ${result.modifiedCount}
-        - Total processed: ${operations.length}`);
-    } else {
-      console.log('No new competitions to save.');
     }
+
+    console.log(`✅ Competitions processed: ${newCompetitions.length}`);
+    console.log(`  ↪ Inserted: ${inserted}`);
+    console.log(`  ↪ Updated (pending): ${updated}`);
+    console.log(`  ↪ Skipped (approved/rejected): ${skipped}`);
   }
 }

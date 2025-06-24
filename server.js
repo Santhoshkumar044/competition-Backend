@@ -27,6 +27,7 @@ import eventParticipation from './routes/eventConfirmationRoutes.js';
 import './Jobs/scheduleSheetSync.js';
 import adminRoutes from './routes/adminRoutes.js';
 import recommendationRoute from './routes/recommendationRoutes.js';
+import hostCompetitionRoutes from './routes/hostCompetitionRoutes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -126,6 +127,7 @@ async function startServer() {
   //Routes
   app.use('/', authRoutes);
   app.use('/api/host', hostRoutes);
+  app.use('/api/host/competitions', hostCompetitionRoutes);
   app.use('/api/competitions', competitionRoutes);
   app.use('/api', eventRoutes);
   app.use('/api/events',eventParticipation);
