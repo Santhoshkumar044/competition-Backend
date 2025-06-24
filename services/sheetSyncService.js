@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 // ✅ Fields to export
-const COMPETITION_FIELDS = ['name', 'RegNo', 'department', 'batch', 'coe', 'competitionTitle'];
+const COMPETITION_FIELDS = ['name', 'RegNo', 'department', 'batch', 'coe', 'competitionTitle', 'teamName'];
 const EVENT_FIELDS = ['name', 'RegNo', 'department', 'batch', 'title'];
 
 // ✅ Fetch data from MongoDB
