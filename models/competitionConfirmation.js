@@ -6,7 +6,8 @@ const competitionParticipantSchema = new mongoose.Schema({
   department: { type: String, required: true },
   batch: { type: String, required: true },
   email: { type: String, required: true },
-  coe: {type:String,required: true},
+  coe: { type:String,required: true},
+  number: { type:String,required: true},
   competitionTitle: { type: String, required: true },
   competitionId: {
     type: mongoose.Schema.Types.ObjectId,

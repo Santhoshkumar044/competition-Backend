@@ -102,6 +102,7 @@ export const createOrUpdateProfile = async (req, res) => {
       domain,
       bio,
       coe,
+      number,
       competitionStats,
     } = req.body;
 
@@ -118,6 +119,7 @@ export const createOrUpdateProfile = async (req, res) => {
       profile.domain = domain;
       profile.bio = bio;
       profile.coe=coe;
+      profile.number=number;
       profile.competitionStats = competitionStats;
 
       const updatedProfile = await profile.save();
@@ -137,6 +139,7 @@ export const createOrUpdateProfile = async (req, res) => {
         domain,
         bio,
         coe,
+        number,
         competitionStats,
       });
 
