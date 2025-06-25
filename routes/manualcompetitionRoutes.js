@@ -5,8 +5,7 @@ import {
   createCompetition,
   getCompetitions,
   getCompetitionById,
-  updateCompetition,
-  deleteCompetition
+  updateCompetition
 } from '../controllers/competitionControllers.js';
 
 const router = Router();
@@ -46,11 +45,5 @@ router.get('/:id', getCompetitionById);
  * Update a competition by ID (host only)
  */
 router.put('/:id', isHost, updateCompetition);
-
-/**
- * DELETE /api/competitions/:id
- * Delete a competition by ID (host only)
- */
-router.delete('/:id', isHost, deleteCompetition);
 
 export default router;

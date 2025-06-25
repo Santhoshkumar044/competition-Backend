@@ -79,25 +79,6 @@ export const updateCompetition = async (req, res) => {
   }
 };
 
-export const deleteCompetition = async (req, res) => {
-  try {
-    const Competition = req.models.Competition;
-
-    const competition = await Competition.findById(req.params.id);
-    if (!competition) return res.status(404).json({ msg: 'Not found' });
-
-    if (competition.source !== 'manual') {
-      return res.status(403).json({ msg: 'You can only delete competitions created manually' });
-    }
-
-    await Competition.findByIdAndDelete(req.params.id);
-    res.json({ msg: 'Competition removed' });
-  } catch (err) {
-    console.error('❌ Error deleting competition:', err);
-    res.status(500).send('Server Error');
-  }
-};
-
 // ✅ Approve scraped competition
 export const approveCompetition = async (req, res) => {
   try {
@@ -119,24 +100,31 @@ export const approveCompetition = async (req, res) => {
 };
 
 // ✅ Reject scraped competition
-export const rejectCompetition = async (req, res) => {
+export const rejectOrDeleteCompetition = async (req, res) => {
   try {
     const Competition = req.models.Competition;
 
     const competition = await Competition.findById(req.params.id);
-    if (!competition || competition.source !== 'scraped') {
-      return res.status(404).json({ msg: 'Scraped competition not found' });
+    if (!competition) return res.status(404).json({ msg: 'Competition not found' });
+
+    if (competition.source === 'manual') {
+      await Competition.findByIdAndDelete(req.params.id);
+      return res.json({ msg: 'Manual competition deleted' });
     }
 
-    competition.status = 'rejected';
-    await competition.save();
+    if (competition.source === 'scraped') {
+      competition.status = 'rejected';
+      await competition.save();
+      return res.json({ msg: 'Scraped competition rejected', competition });
+    }
 
-    res.json({ msg: 'Competition rejected', competition });
+    return res.status(400).json({ msg: 'Unknown competition source' });
   } catch (err) {
-    console.error('❌ Error rejecting competition:', err.message);
+    console.error('❌ Error processing competition:', err.message);
     res.status(500).send('Server Error');
   }
 };
+
 
 // ✅ Cleanup expired pending competitions
 export const cleanupExpiredPendingCompetitions = async (req, res) => {

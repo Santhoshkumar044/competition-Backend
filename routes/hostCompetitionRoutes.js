@@ -2,8 +2,8 @@ import { Router } from 'express';
 import isHost from '../middleware/isHost.js';
 import {
   approveCompetition,
-  rejectCompetition,
-  cleanupExpiredPendingCompetitions
+  cleanupExpiredPendingCompetitions,
+  rejectOrDeleteCompetition
 } from '../controllers/competitionControllers.js';
 
 const router = Router();
@@ -12,7 +12,7 @@ const router = Router();
 router.patch('/:id/approve', isHost, approveCompetition);
 
 // PATCH /api/host/competitions/:id/reject
-router.patch('/:id/reject', isHost, rejectCompetition);
+router.patch('/:id/reject', isHost, rejectOrDeleteCompetition);
 
 // DELETE /api/host/competitions/cleanup
 router.delete('/cleanup', isHost, cleanupExpiredPendingCompetitions);
