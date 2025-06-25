@@ -5,29 +5,39 @@ export const scrapeUnstop = async () => {
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
+
   const page = await browser.newPage();
   await page.goto('https://unstop.com/hackathons', { waitUntil: 'networkidle2' });
 
+  // Scroll the actual hackathon list container
   await page.evaluate(async () => {
-    await new Promise(resolve => {
-      let totalHeight = 0;
-      const distance = 100;
-      const timer = setInterval(() => {
-        window.scrollBy(0, distance);
-        totalHeight += distance;
-        if (totalHeight >= document.body.scrollHeight - window.innerHeight) {
-          clearInterval(timer);
-          resolve();
-        }
-      }, 200);
-    });
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    const container = document.querySelector('.user_list.custom-scrollbar.thin.bdr-rds-none');
+    if (!container) return;
+
+    let lastScrollHeight = container.scrollHeight;
+    let sameHeightCount = 0;
+
+    while (sameHeightCount < 3) {
+      container.scrollBy(0, 1000);
+      await delay(1500);
+
+      const currentScrollHeight = container.scrollHeight;
+      if (currentScrollHeight === lastScrollHeight) {
+        sameHeightCount++;
+      } else {
+        sameHeightCount = 0;
+        lastScrollHeight = currentScrollHeight;
+      }
+    }
   });
 
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
+  // Extract all the loaded hackathons
   const data = await page.evaluate(() => {
     const results = [];
     const cards = document.querySelectorAll('[id^="i_"]');
+
     cards.forEach(card => {
       const title = card.querySelector('h2')?.innerText?.trim() || '';
       const location = card.querySelector('p')?.innerText?.trim() || '';
@@ -41,6 +51,7 @@ export const scrapeUnstop = async () => {
 
       const prize = card.querySelector('div.seperate_box.prize')?.innerText.trim() || 'Non cash prize';
       const organiser = card.querySelector('.content p')?.innerText.trim() || 'Unstop';
+
       const id = card.getAttribute('id')?.split('_')[1];
       const link = id ? `https://unstop.com/hackathon/${title.toLowerCase().replace(/\s+/g, '-')}-${id}` : '';
 
@@ -51,5 +62,6 @@ export const scrapeUnstop = async () => {
   });
 
   await browser.close();
-  return data;
+
+  return data.filter(item => item.title && item.link);
 };
