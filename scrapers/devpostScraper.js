@@ -16,7 +16,7 @@ export const scrapeDevpost = async () => {
     let lastHeight = document.body.scrollHeight;
     let sameHeight = 0;
 
-    while (sameHeight < 3) {
+    while (sameHeight < 2) {
       window.scrollBy(0, 1500);
       await delay(2000);
 
