@@ -18,22 +18,18 @@ export async function createEvent(req, res) {
   }
 
   try {
-    const normalizedRoom = roomnumber.trim().toLowerCase();
+    const normalizedRoom = roomnumber.trim().toUpperCase();
     const venue = await Venue.findOne({ roomnumber: normalizedRoom });
 
     if (!venue) {
       return res.status(404).json({ message: 'Venue not found' });
     }
-
-    // Check for conflicts
+    //check for conflict
     const conflictingEvent = await Event.findOne({
-      'venueDetails.venueId': venue._id,
-      $or: [
-        { startTime: { $lt: new Date(endTime) } },
-        { endTime: { $gt: new Date(startTime) } }
-      ]
+          'venueDetails.roomnumber': normalizedRoom,
+            startTime: { $lt: new Date(endTime) } , 
+            endTime: { $gt: new Date(startTime)},
     });
-
     if (conflictingEvent) {
       return res.status(409).json({ 
         message: 'Venue already booked',
