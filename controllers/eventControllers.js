@@ -1,6 +1,9 @@
 
 import mongoose from 'mongoose';
 import { scheduleVenueFreeingJob } from '../utils/scheduleJobs.js';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+dayjs.extend(customParseFormat);
 
 export async function createEvent(req, res) {
   const { title, description, collegeName, startTime, endTime, roomnumber } = req.body;

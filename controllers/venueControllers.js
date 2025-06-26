@@ -37,10 +37,8 @@ export async function bookVenue(req, res) {
     // Check for overlapping booking
     const conflictingBooking = await Event.findOne({
       'venueDetails.roomnumber': roomnumber,
-      $or: [
-        { startTime: { $lt: new Date(endTime) } }, 
-        { endTime: { $gt: new Date(startTime) } },
-      ],
+         startTime: { $lt: new Date(endTime) } , 
+         endTime: { $gt: new Date(startTime) },
     });
 
     if (conflictingBooking) {
