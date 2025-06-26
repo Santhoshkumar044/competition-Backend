@@ -5,7 +5,9 @@ const eventParticipantSchema = new mongoose.Schema({
   RegNo: { type: String, required: true },
   department: { type: String, required: true },
   batch: { type: String, required: true },
+  number: { type: String, required: true },
   title: { type: String, required: true },
+
   eventId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'event',

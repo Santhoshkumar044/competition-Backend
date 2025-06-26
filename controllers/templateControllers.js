@@ -4,7 +4,7 @@ import createEventModel from '../models/eventSchema.js';
 import { scheduleVenueFreeingJob } from '../utils/scheduleJobs.js';
 
 export async function createTemplate(req, res) {
-  const { title, description, collegeName, EventDate, StartTime, endTime, roomnumber } = req.body;
+  const { title, description, collegeName, startTime, endTime, roomnumber, EventDate } = req.body;
 
   const myProjectDb = req.app.locals.myProjectDb;
   const venueDb = req.app.locals.venueDb;
@@ -13,16 +13,31 @@ export async function createTemplate(req, res) {
   const Venue = createVenueModel(venueDb);
 
   // ✅ Basic validation
-  if (!title || !description || !collegeName || !EventDate || !StartTime || !endTime || !roomnumber) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
+  if (!title || !description || !collegeName || !roomnumber || !EventDate || !startTime || !endTime) {
+  return res.status(400).json({ message: 'All fields are required' });
+}
 
-  if (new Date(StartTime) >= new Date(endTime)) {
-    return res.status(400).json({ message: 'Start time must be before end time' });
+    const startDateTimeStr = `${EventDate} ${startTime}`;  // "10-07-2025 05:00 PM"
+    const endDateTimeStr = `${EventDate} ${endTime}`;      // "10-07-2025 06:00 PM"
+    const parsedStart = dayjs(startDateTimeStr, 'YYYY-MM-DD HH:mm');
+    const parsedEnd = dayjs(endDateTimeStr, 'YYYY-MM-DD HH:mm');
+    console.log('EventDate:', EventDate);
+
+    if (!parsedStart.isValid() || !parsedEnd.isValid()) {
+      return res.status(400).json({ message: 'Invalid date/time format' });
+    }
+
+
+  // if (new Date(StartTime) >= new Date(endTime)) {
+  //   return res.status(400).json({ message: 'Start time must be before end time' });
+  // }
+
+  if (parsedStart >= parsedEnd) {
+    return res.status(400).json({ message: 'End time must be after start time' });
   }
 
   try {
-    const normalizedRoom = roomnumber.trim().toLowerCase();
+    const normalizedRoom = roomnumber.trim().toUpperCase();
     const venue = await Venue.findOne({ roomnumber: normalizedRoom });
 
     if (!venue) {
@@ -31,13 +46,9 @@ export async function createTemplate(req, res) {
 
     // ✅ Conflict check (optional if needed for templates)
     const conflict = await Template.findOne({
-      roomnumber: venue.roomnumber,
-      $or: [
-        {
-          StartTime: { $lt: new Date(endTime) },
-          endTime: { $gt: new Date(StartTime) },
-        },
-      ],
+      'venueDetails.roomnumber': normalizedRoom,
+        startTime: { $lt: parsedEnd.toDate() },
+        endTime: { $gt: parsedStart.toDate() },
     });
 
     if (conflict) {
@@ -49,9 +60,9 @@ export async function createTemplate(req, res) {
       title,
       description,
       collegeName,
-      EventDate: new Date(EventDate),
-      StartTime: new Date(StartTime),
-      endTime: new Date(endTime),
+      EventDate,
+      startTime: parsedStart.toDate(),
+      endTime: parsedEnd.toDate(),
       venueDetails:{
       venueId:venue._id.toString(),
       roomnumber: venue.roomnumber,

@@ -37,6 +37,7 @@ export const confirmEventRegistration = async (req, res) => {
       department: user.Dept,
       batch: user.batch,
       email: user.email,
+      number:user.number,
       title: event.title,
       eventId: event._id,
       profileId: user._id,
