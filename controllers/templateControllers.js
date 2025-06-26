@@ -2,6 +2,9 @@ import createtemplateModel from '../models/templateschema.js';
 import createVenueModel from '../models/venueschema.js';
 import createEventModel from '../models/eventSchema.js';
 import { scheduleVenueFreeingJob } from '../utils/scheduleJobs.js';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+dayjs.extend(customParseFormat);
 
 export async function createTemplate(req, res) {
   const { title, description, collegeName, startTime, endTime, roomnumber, EventDate } = req.body;
