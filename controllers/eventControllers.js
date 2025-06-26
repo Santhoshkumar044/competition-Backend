@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import { scheduleVenueFreeingJob } from '../utils/scheduleJobs.js';
 import dayjs from 'dayjs';
@@ -144,6 +143,7 @@ export async function getEventById(req, res) {
   }
 }
 
+
 // export async function updateEvent(req, res) {
 //   const Event = req.models.Event;
 //   const { id } = req.params;
@@ -154,7 +154,6 @@ export async function getEventById(req, res) {
 //   }
 
 //   try {
-//     // Prevent updating past events
 //     const existingEvent = await Event.findById(id);
 //     if (!existingEvent) {
 //       return res.status(404).json({ message: 'Event not found' });
@@ -164,15 +163,36 @@ export async function getEventById(req, res) {
 //       return res.status(400).json({ message: 'Cannot modify past events' });
 //     }
 
-//     const updatedEvent = await Event.findByIdAndUpdate(
-//       id,
-//       { ...updates, startTime: new Date(updates.startTime), endTime: new Date(updates.endTime) },
-//       { new: true, runValidators: true }
-//     );
+//     // Parse and format times
+//     const { EventDate, startTime, endTime } = updates;
+//     const updatePayload = { ...updates };
 
-//     // Notify clients
+//     if (EventDate && startTime) {
+//       const parsedStart = dayjs(`${EventDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+//       if (!parsedStart.isValid()) {
+//         return res.status(400).json({ message: 'Invalid start time format' });
+//       }
+//       updatePayload.startTime = parsedStart.toDate();
+//     }
+
+//     if (EventDate && endTime) {
+//       const parsedEnd = dayjs(`${EventDate} ${endTime}`, 'YYYY-MM-DD HH:mm');
+//       if (!parsedEnd.isValid()) {
+//         return res.status(400).json({ message: 'Invalid end time format' });
+//       }
+//       updatePayload.endTime = parsedEnd.toDate();
+//     }
+
+//     if (EventDate) {
+//       updatePayload.EventDate = EventDate; // still store the string if required
+//     }
+
+//     const updatedEvent = await Event.findByIdAndUpdate(id, updatePayload, {
+//       new: true,
+//       runValidators: true,
+//     });
+
 //     req.io.emitEventUpdate(id, 'updated');
-
 //     return res.json(updatedEvent);
 
 //   } catch (error) {
@@ -183,67 +203,108 @@ export async function getEventById(req, res) {
 
 export async function updateEvent(req, res) {
   const Event = req.models.Event;
+  const Venue = req.models.Venue;
   const { id } = req.params;
   const updates = req.body;
 
-  // ✅ Validate the MongoDB ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid event ID' });
   }
 
   try {
-    // ✅ Fetch the existing event
     const existingEvent = await Event.findById(id);
     if (!existingEvent) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    // ✅ Disallow updates to past events
+    // Prevent editing past events
     if (new Date(existingEvent.startTime) < new Date()) {
       return res.status(400).json({ message: 'Cannot modify past events' });
     }
 
-    // ✅ Build the update payload
-    const updatePayload = {
-      ...updates, // Copy all updatable fields from the request
-    };
+    // Step 1: Merge updates with existing values
+    const updatedTitle = updates.title || existingEvent.title;
+    const updatedDescription = updates.description || existingEvent.description;
+    const updatedCollegeName = updates.collegeName || existingEvent.collegeName;
+    const updatedRoomnumber = updates.roomnumber || existingEvent.venueDetails.roomnumber;
+    const updatedEventDate = updates.EventDate || dayjs(existingEvent.startTime).format('YYYY-MM-DD');
+    const updatedStartTime = updates.startTime || dayjs(existingEvent.startTime).format('HH:mm');
+    const updatedEndTime = updates.endTime || dayjs(existingEvent.endTime).format('HH:mm');
 
-    // ✅ If startTime is present, convert to Date object
-    if (updates.startTime) {
-      updatePayload.startTime = new Date(updates.startTime);
+    // Step 2: Parse new start and end time
+    const parsedStart = dayjs(`${updatedEventDate} ${updatedStartTime}`, 'YYYY-MM-DD HH:mm');
+    const parsedEnd = dayjs(`${updatedEventDate} ${updatedEndTime}`, 'YYYY-MM-DD HH:mm');
+
+    if (!parsedStart.isValid() || !parsedEnd.isValid()) {
+      return res.status(400).json({ message: 'Invalid date/time format' });
     }
 
-    // ✅ If endTime is present, convert to Date object
-    if (updates.endTime) {
-      updatePayload.endTime = new Date(updates.endTime);
+    if (parsedStart >= parsedEnd) {
+      return res.status(400).json({ message: 'End time must be after start time' });
     }
 
-    // ✅ If EventDate is present, add it to the update (expecting a string like 'YYYY-MM-DD')
-    if (updates.EventDate) {
-      updatePayload.EventDate = updates.EventDate;
+    const normalizedRoom = updatedRoomnumber.trim().toUpperCase();
+    const venue = await Venue.findOne({ roomnumber: normalizedRoom });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue not found' });
     }
 
-    // ✅ Perform the update and return the new document
+    // Step 3: Check venue conflict if time or room number changed
+    if (
+      normalizedRoom !== existingEvent.venueDetails.roomnumber ||
+      parsedStart.toISOString() !== existingEvent.startTime.toISOString() ||
+      parsedEnd.toISOString() !== existingEvent.endTime.toISOString()
+    ) {
+      const conflict = await Event.findOne({
+        _id: { $ne: id },
+        'venueDetails.roomnumber': normalizedRoom,
+        startTime: { $lt: parsedEnd.toDate() },
+        endTime: { $gt: parsedStart.toDate() },
+      });
+
+      if (conflict) {
+        return res.status(409).json({
+          message: 'Venue already booked for the selected time',
+          conflict: {
+            id: conflict._id,
+            title: conflict.title,
+            time: `${conflict.startTime} to ${conflict.endTime}`,
+          },
+        });
+      }
+    }
+
+    // Step 4: Apply update
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
-      updatePayload,
       {
-        new: true,           // Return the updated document
-        runValidators: true  // Run schema validations
-      }
+        title: updatedTitle,
+        description: updatedDescription,
+        collegeName: updatedCollegeName,
+        EventDate: updatedEventDate,
+        startTime: parsedStart.toDate(),
+        endTime: parsedEnd.toDate(),
+        venueDetails: {
+          venueId: venue._id,
+          roomnumber: venue.roomnumber,
+          location: venue.location,
+          capacity: venue.capacity,
+        },
+      },
+      { new: true, runValidators: true }
     );
 
-    // ✅ Notify connected clients about the update (via socket.io or similar)
+    req.io.emitVenueStatusChange(venue.roomnumber, 'occupied');
     req.io.emitEventUpdate(id, 'updated');
 
-    // ✅ Return the updated event
     return res.json(updatedEvent);
-
   } catch (error) {
     console.error('Update event error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 export async function deleteEvent(req, res) {
   const Event = req.models.Event;
