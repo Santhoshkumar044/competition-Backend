@@ -40,14 +40,15 @@ if (!title || !description || !collegeName || !roomnumber || !EventDate || !star
     if (!venue) {
       return res.status(404).json({ message: 'Venue not found' });
     }
-
-    // Check for conflicts
+    //check for conflict
     const conflictingEvent = await Event.findOne({
+          'venueDetails.roomnumber': normalizedRoom,
+            startTime: { $lt: new Date(endTime) } , 
+            endTime: { $gt: new Date(startTime)},
       'venueDetails.roomnumber': normalizedRoom,
         startTime: { $lt: parsedEnd.toDate() },
         endTime: { $gt: parsedStart.toDate() },
     });
-
     if (conflictingEvent) {
       return res.status(409).json({ 
         message: 'Venue already booked',

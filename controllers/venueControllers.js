@@ -33,14 +33,12 @@ export async function bookVenue(req, res) {
     if (!venue) {
       return res.status(404).json({ message: 'Venue not found' });
     }
-
-    // Check for overlapping booking
+    
     const conflictingBooking = await Event.findOne({
       'venueDetails.roomnumber': roomnumber,
          startTime: { $lt: new Date(endTime) } , 
-         endTime: { $gt: new Date(startTime) },
-    });
-
+         endTime: { $gt: new Date(startTime)},
+        });
     if (conflictingBooking) {
       return res.status(400).json({ message: 'Venue already booked for the selected time slot' });
     }
