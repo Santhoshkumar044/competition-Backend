@@ -29,6 +29,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import recommendationRoute from './routes/recommendationRoutes.js';
 import hostCompetitionRoutes from './routes/hostCompetitionRoutes.js';
 import competitionConfirmationRoutes from './routes/competitionConfirmations.js';
+import viewroutes from './routes/viewRoutes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -167,6 +168,7 @@ async function startServer() {
   app.use('/api/admin',adminRoutes);
   app.use('/api',recommendationRoute);
   app.use('/api/competition-confirmations',competitionConfirmationRoutes);
+  app.use('/api/user',viewroutes);
 
   // Add new scrape route
   app.get('/api/scrape', (req, res) => 
