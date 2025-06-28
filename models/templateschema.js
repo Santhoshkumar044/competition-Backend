@@ -5,7 +5,7 @@ const templateschema =new mongoose.Schema({
     collegeName:String,
     venueDetails: {
         venueId: String,
-        roomnumber: String,
+        name: String,
         capacity: Number,
         location: String,
     },

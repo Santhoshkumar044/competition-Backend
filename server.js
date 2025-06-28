@@ -43,38 +43,65 @@ const io = new SocketIOServer(server, {
 });
 
 //Database connection function
+// async function initializeDatabase() {
+//   try {
+//     await connectDB(); 
+//     const venueDb = await connectVenueDB(); 
+
+//     app.locals.venueDb = venueDb; // Store it globally
+
+
+//     console.log('✅ Main DB ID:', mongoose.connection.id);
+//     console.log('✅ Venue DB ID:', venueDb.id);
+
+//     return true;
+//   } catch (err) {
+//     console.error('❌ Database connection failed:', err);
+//     return false;
+//   }
+// }
+
+// async function startServer() {
+//   if (!await initializeDatabase()) {
+//     process.exit(1);
+//   }
+
+//   //Initialize models
+//   app.locals.models = initModels();
+//   console.log('✅ Models Initialized');
+
+//   app.use((req, res, next) => {
+//     req.models = app.locals.models; 
+//     next();
+//   });
+  
+// Initialize database connections
 async function initializeDatabase() {
   try {
     await connectDB(); 
-    const venueDb = await connectVenueDB(); 
-
-    app.locals.venueDb = venueDb; // Store it globally
-
-
+    const venueDb = await connectVenueDB(); // ✅ CHANGED: connect to second cluster
+    app.locals.venueDb = venueDb; // ✅ CHANGED: store second DB connection globally
     console.log('✅ Main DB ID:', mongoose.connection.id);
     console.log('✅ Venue DB ID:', venueDb.id);
-
-    return true;
+    return venueDb; // ✅ CHANGED: return venueDb connection
   } catch (err) {
     console.error('❌ Database connection failed:', err);
-    return false;
+    return null;
   }
 }
 
 async function startServer() {
-  if (!await initializeDatabase()) {
-    process.exit(1);
-  }
+  const venueDbConn = await initializeDatabase(); // ✅ CHANGED: receive second DB connection
+  if (!venueDbConn) process.exit(1);
 
-  //Initialize models
-  app.locals.models = initModels();
+  app.locals.models = initModels(venueDbConn); // ✅ CHANGED: pass second DB to models
   console.log('✅ Models Initialized');
 
   app.use((req, res, next) => {
-    req.models = app.locals.models; 
+    req.models = app.locals.models;
     next();
   });
-  
+
   if (!app.locals.models.User || !app.locals.models.Host) {
     throw new Error('Critical models (User/Host) not found!');
   }
