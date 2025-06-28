@@ -44,7 +44,8 @@ import createEventModel from './eventSchema.js';
 import createVenueModel from './venueschema.js';
 import createCompetitionParticipantModel from './competitionConfirmation.js';
 import createEventConfirmationModel from './eventConfirmationschema.js';
-import createtemplateModel from './templateSchema.js';
+//import createtemplateModel from './templateSchema.js';
+import viewModel from './viewschema.js';
 import mongoose from 'mongoose';
 
 /**
@@ -63,7 +64,8 @@ export default function initModels(venueDbConn) {
     Event: createEventModel(myProjectDb),
     CompetitionParticipant: createCompetitionParticipantModel(myProjectDb),
     EventParticipant: createEventConfirmationModel(myProjectDb),
-    Template: createtemplateModel(myProjectDb),
+    //Template: createtemplateModel(myProjectDb),
+    View: viewModel(myProjectDb),
 
     // ✅ Venue model from second cluster
     Venue: createVenueModel(venueDbConn),
