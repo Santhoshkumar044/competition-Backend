@@ -5,7 +5,7 @@ const eventSchema = new mongoose.Schema({
   description: String,
   collegeName: String,
   venueDetails: {
-    venueId: String,
+    venueId: { type: String, required: false },
     name: String,
     capacity: Number,
     location: String,
