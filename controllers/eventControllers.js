@@ -185,7 +185,6 @@ export async function getEventById(req, res) {
 //     return res.status(500).json({ message: 'Internal server error' });
 //   }
 // }
-
 export async function updateEvent(req, res) {
   const Event = req.models.Event;
   const Venue = req.models.Venue;
@@ -202,21 +201,18 @@ export async function updateEvent(req, res) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    // Prevent editing past events
     if (new Date(existingEvent.startTime) < new Date()) {
       return res.status(400).json({ message: 'Cannot modify past events' });
     }
 
-    // Step 1: Merge updates with existing values
     const updatedTitle = updates.title || existingEvent.title;
     const updatedDescription = updates.description || existingEvent.description;
     const updatedCollegeName = updates.collegeName || existingEvent.collegeName;
-    const updatedRoomnumber = updates.roomnumber || existingEvent.venueDetails.roomnumber;
+    const updatedName = updates.name || existingEvent.venueDetails.name;
     const updatedEventDate = updates.EventDate || dayjs(existingEvent.startTime).format('YYYY-MM-DD');
     const updatedStartTime = updates.startTime || dayjs(existingEvent.startTime).format('HH:mm');
     const updatedEndTime = updates.endTime || dayjs(existingEvent.endTime).format('HH:mm');
 
-    // Step 2: Parse new start and end time
     const parsedStart = dayjs(`${updatedEventDate} ${updatedStartTime}`, 'YYYY-MM-DD HH:mm');
     const parsedEnd = dayjs(`${updatedEventDate} ${updatedEndTime}`, 'YYYY-MM-DD HH:mm');
 
@@ -228,22 +224,21 @@ export async function updateEvent(req, res) {
       return res.status(400).json({ message: 'End time must be after start time' });
     }
 
-    const normalizedRoom = updatedRoomnumber.trim().toUpperCase();
-    const venue = await Venue.findOne({ roomnumber: normalizedRoom });
+    const normalizedName = updatedName.trim().toUpperCase();
+    const venue = await Venue.findOne({ name: normalizedName });
 
     if (!venue) {
       return res.status(404).json({ message: 'Venue not found' });
     }
 
-    // Step 3: Check venue conflict if time or room number changed
     if (
-      normalizedRoom !== existingEvent.venueDetails.roomnumber ||
+      normalizedName !== existingEvent.venueDetails.name ||
       parsedStart.toISOString() !== existingEvent.startTime.toISOString() ||
       parsedEnd.toISOString() !== existingEvent.endTime.toISOString()
     ) {
       const conflict = await Event.findOne({
         _id: { $ne: id },
-        'venueDetails.roomnumber': normalizedRoom,
+        'venueDetails.name': normalizedName,
         startTime: { $lt: parsedEnd.toDate() },
         endTime: { $gt: parsedStart.toDate() },
       });
@@ -260,7 +255,6 @@ export async function updateEvent(req, res) {
       }
     }
 
-    // Step 4: Apply update
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
       {
@@ -272,7 +266,7 @@ export async function updateEvent(req, res) {
         endTime: parsedEnd.toDate(),
         venueDetails: {
           venueId: venue._id,
-          roomnumber: venue.roomnumber,
+          name: venue.name,
           location: venue.location,
           capacity: venue.capacity,
         },
@@ -280,7 +274,7 @@ export async function updateEvent(req, res) {
       { new: true, runValidators: true }
     );
 
-    req.io.emitVenueStatusChange(venue.roomnumber, 'occupied');
+    req.io.emitVenueStatusChange(venue.name, 'occupied');
     req.io.emitEventUpdate(id, 'updated');
 
     return res.json(updatedEvent);
