@@ -4,6 +4,7 @@ export const createCompetition = async (req, res) => {
 
     const newCompetition = new Competition({
       ...req.body,
+      status: 'approved',
       source: 'manual'
     });
 
@@ -155,3 +156,25 @@ export const cleanupExpiredPendingCompetitions = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+export const getApprovedCompetitions = async (req, res) => {
+  try {
+    const competitions = await req.models.Competition.find({ status: 'approved' })
+      .sort({ createdAt: -1 })
+      .limit(6);
+
+    const enriched = competitions.map(comp => {
+      return {
+        ...comp.toObject(),
+        location: comp.location || comp.venue || comp.organiser || 'Unknown',
+        daysLeftText: comp.daysLeftText || (comp.daysLeft !== undefined ? `${comp.daysLeft} days` : 'Unknown'),
+      };
+    });
+
+    res.json(enriched);
+  } catch (err) {
+    console.error("❌ getApprovedCompetitions failed:", err);
+    res.status(500).json({ error: err.message || 'Server Error' });
+  }
+};
+
