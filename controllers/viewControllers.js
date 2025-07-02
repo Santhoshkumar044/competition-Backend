@@ -151,13 +151,40 @@ export async function getUnconfirmedViewed(req, res) {
     const user = await View.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    // const unconfirmed = user.viewedCompetitions.filter(
+    //   (entry) => !user.confirmedCompetitions.includes(entry.competitionId)
+    // );
     const unconfirmed = user.viewedCompetitions.filter(
-      (entry) => !user.confirmedCompetitions.includes(entry.competitionId)
+      (entry) =>
+        !user.confirmedCompetitions.includes(entry.competitionId) &&
+        !(user.skippedCompetitions || []).includes(entry.competitionId)
     );
 
     return res.status(200).json(unconfirmed);
   } catch (error) {
     console.error("❌ Error in getUnconfirmedViewed:", error);
+    return res.status(500).json({ message: 'Server error', error: error.message || error.toString() });
+  }
+}
+export async function skipCompetition(req, res) {
+  const View = req.models.View;
+  const { email, competitionId } = req.body;
+
+  try {
+    const user = await View.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (!user.skippedCompetitions.includes(competitionId)) {
+      user.skippedCompetitions.push(competitionId);
+      await user.save();
+    }
+
+    return res.status(200).json({ message: 'Competition skipped' });
+  } catch (error) {
+    console.error("❌ Error in skipCompetition:", error);
     return res.status(500).json({ message: 'Server error', error: error.message || error.toString() });
   }
 }

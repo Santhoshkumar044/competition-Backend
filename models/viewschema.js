@@ -10,7 +10,8 @@ const viewSchema = new mongoose.Schema({
     competitionId: String,
     viewedAt: Date
   }],
-  confirmedCompetitions: [String]
+  confirmedCompetitions: [String],
+  skippedCompetitions: [String]
 });3
 
 export default function createView(dbConnection){
