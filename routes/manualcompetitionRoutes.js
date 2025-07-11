@@ -5,7 +5,8 @@ import {
   createCompetition,
   getCompetitions,
   getCompetitionById,
-  updateCompetition
+  updateCompetition,
+  getApprovedCompetitions
 } from '../controllers/competitionControllers.js';
 
 const router = Router();
@@ -39,6 +40,7 @@ router.get('/', getCompetitions);
  * Get a specific competition by ID
  */
 router.get('/:id', getCompetitionById);
+router.get('/approved/latest', getApprovedCompetitions);// added now to bring in home page
 
 /**
  * PUT /api/competitions/:id
