@@ -1,6 +1,6 @@
 import createtemplateModel from '../models/templateschema.js';
 import createVenueModel from '../models/venueschema.js';
-import createEventModel from '../models/eventSchema.js';
+import createEventModel from '../models/eventschema.js';
 import { scheduleVenueFreeingJob } from '../utils/scheduleJobs.js';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
