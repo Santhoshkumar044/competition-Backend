@@ -40,7 +40,7 @@ import createUserModel from './users.js';
 import createHostModel from './hostschema.js';
 import createProfileModel from './Profileschema.js';
 import createCompetitionModel from './competition.js';
-import createEventModel from './eventSchema.js';
+import createEventModel from './eventschema.js';
 import createVenueModel from './venueschema.js';
 import createCompetitionParticipantModel from './competitionConfirmation.js';
 import createEventConfirmationModel from './eventConfirmationschema.js';
