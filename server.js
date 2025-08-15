@@ -125,9 +125,8 @@ async function startServer() {
   const allowedOrigins = [
     process.env.FRONTEND_URL,
     "http://localhost:5000",
-    "https://competition-backend-1-ewes.onrender.com"
+    "https://grindupcit.vercel.app"
   ];
-
 
   app.use(cors({
     origin: allowedOrigins,
