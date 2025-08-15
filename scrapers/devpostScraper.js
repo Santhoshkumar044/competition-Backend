@@ -3,6 +3,8 @@ import puppeteer from 'puppeteer';
 export const scrapeDevpost = async () => {
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath: puppeteer.executablePath(), //Use installed Chrome
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
     defaultViewport: { width: 1280, height: 800 }
   });
   const page = await browser.newPage();
@@ -55,7 +57,6 @@ export const scrapeDevpost = async () => {
 
   await browser.close();
 
-  // Filter valid and not-ended hackathons
   return hackathons.filter(h => {
     if (!h.title || !h.daysLeft || !h.organiser) return false;
 

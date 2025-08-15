@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 export const scrapeUnstop = async () => {
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath: puppeteer.executablePath(), //Use installed Chrome
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
