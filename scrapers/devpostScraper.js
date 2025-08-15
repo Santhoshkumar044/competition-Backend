@@ -3,7 +3,6 @@ import puppeteer from 'puppeteer';
 export const scrapeDevpost = async () => {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: puppeteer.executablePath(), //Use installed Chrome
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     defaultViewport: { width: 1280, height: 800 }
   });
