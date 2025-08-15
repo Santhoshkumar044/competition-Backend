@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 
 export const scrapeUnstop = async () => {
+  console.log('Resolved Puppeteer executable path:', puppeteer.executablePath());
   const browser = await puppeteer.launch({
     headless: true,
     executablePath:puppeteer.executablePath(), 
