@@ -146,9 +146,9 @@ async function startServer() {
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days
     }
   }));
