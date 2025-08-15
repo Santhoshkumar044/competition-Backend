@@ -10,7 +10,7 @@ export const scrapeDevpost = async () => {
   });
   const page = await browser.newPage();
 
-  await page.goto('https://devpost.com/hackathons', { waitUntil: 'networkidle2' });
+  await page.goto('https://devpost.com/hackathons', { waitUntil: 'networkidle2',timeout:90000 });
 
   // Scroll the window, not container
   await page.evaluate(async () => {

@@ -9,7 +9,7 @@ export const scrapeUnstop = async () => {
   });
 
   const page = await browser.newPage();
-  await page.goto('https://unstop.com/hackathons', { waitUntil: 'networkidle2' });
+  await page.goto('https://unstop.com/hackathons', { waitUntil: 'networkidle2',timeout:90000 });
 
   // Scroll the actual hackathon list container
   await page.evaluate(async () => {
