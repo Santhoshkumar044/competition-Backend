@@ -122,9 +122,15 @@ async function startServer() {
     req.io = io; 
     next();
   });
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "http://localhost:5000",
+    "https://competition-backend-1-ewes.onrender.com"
+  ];
+
 
   app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true
   }));
 
