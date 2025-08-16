@@ -125,11 +125,10 @@ async function startServer() {
   const allowedOrigins = [
     process.env.FRONTEND_URL,
     "http://localhost:5000",
-    "https://grindupcit.vercel.app"
   ];
 
   app.use(cors({
-    origin: allowedOrigins,
+    origin: "https://grindupcit.vercel.app",
     credentials: true
   }));
 
