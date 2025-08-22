@@ -8,7 +8,7 @@ export const googleAuth = passport.authenticate('google', {
 export const googleAuthCallback = (req, res, next) => {
   passport.authenticate('google', async (err, user, info) => {
     if (err || !user) {
-      return res.redirect(`${process.env.FRONTEND_URL}login`);
+      return res.redirect(`${process.env.FRONTEND_URL}/login`);
     }
 
     req.login(user, async (err) => {
@@ -17,7 +17,7 @@ export const googleAuthCallback = (req, res, next) => {
       const role = user.role;
 
       if (role === 'host') {
-        return res.redirect(`${process.env.FRONTEND_URL}host-dashboard`);
+        return res.redirect(`${process.env.FRONTEND_URL}/host-dashboard`);
       }
 
       try {
@@ -26,10 +26,10 @@ export const googleAuthCallback = (req, res, next) => {
 
         if (profile) {
           
-          return res.redirect(`${process.env.FRONTEND_URL}user`);
+          return res.redirect(`${process.env.FRONTEND_URL}/user`);
         } else {
           
-          return res.redirect(`${process.env.FRONTEND_URL}profile`);
+          return res.redirect(`${process.env.FRONTEND_URL}/profile`);
         }
       } catch (dbErr) {
         console.error("Profile check failed:", dbErr);

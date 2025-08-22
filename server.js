@@ -127,14 +127,41 @@ async function startServer() {
     "http://localhost:5000",
   ];
 
+  // app.use(cors({
+  //   origin: "https://grindupcit.vercel.app",
+  //   credentials: true
+  // }));
+
+  // app.use(express.json());
+
+  // //Session configuration
+  // app.use(session({
+  //   secret: process.env.SESSION_SECRET,
+  //   resave: false,
+  //   saveUninitialized: false,
+  //   store: MongoStore.create({
+  //     mongoUrl: process.env.MONGO_URI,
+  //     collectionName: 'sessions',
+  //     ttl: 14 * 24 * 60 * 60 // 14 days
+  //   }),
+  //   cookie: {
+  //     secure: true,
+  //     httpOnly: true,
+  //     sameSite: 'none',
+  //     maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days
+  //   }
+  // }));
+  app.set('trust proxy', 1);
+
+  // Updated CORS config
   app.use(cors({
-    origin: "https://grindupcit.vercel.app",
-    credentials: true
+    origin: process.env.FRONTEND_URL, 
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
 
-  app.use(express.json());
-
-  //Session configuration
+  // Updated session config
   app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -142,16 +169,15 @@ async function startServer() {
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60 // 14 days
+      ttl: 14 * 24 * 60 * 60
     }),
     cookie: {
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      sameSite: 'none',
-      maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 14 * 24 * 60 * 60 * 1000
     }
   }));
-
   //Authentication
   configurePassport(app);
   app.use(passport.initialize());
