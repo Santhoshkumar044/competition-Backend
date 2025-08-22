@@ -157,10 +157,11 @@ async function startServer() {
   app.use(cors({
     origin: "https://grindupcit.vercel.app", 
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH','OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
-
+  app.use(express.json());
+  
   // Updated session config
   app.use(session({
     secret: process.env.SESSION_SECRET,
